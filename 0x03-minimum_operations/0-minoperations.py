@@ -2,6 +2,7 @@
 """
 Function that gets min num of ops
 """
+
 import sys
 
 def minOperations(n):
@@ -11,4 +12,3 @@ def minOperations(n):
     for i in range(n // 2, 0, -1):
         if n % i == 0:
             return n // i + minOperations(i)
-            
