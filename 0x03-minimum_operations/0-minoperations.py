@@ -1,16 +1,22 @@
 #!/usr/bin/python3
-"""
-Function that gets min num of ops
-"""
-
-import sys
+"""minOperations"""
 
 
 def minOperations(n):
-    """gets min operations"""
-
-    if (n < 2):
+    """number of operations to copy paste
+    Args:
+        n: given number
+    Returns:
+        num: number of operations.
+    """
+    p = 2
+    num = 0
+    if type(n) != int or n <= 1:
         return 0
-    for i in range(n // 2, 0, -1):
-        if n % i == 0:
-            return n // i + minOperations(i)
+    while n != 1:
+        if n % p == 0:
+            n = n / p
+            num = num + p
+        else:
+            p = p + 1
+    return int(num)
