@@ -5,7 +5,9 @@ Function that gets min num of ops
 
 import sys
 
+
 def minOperations(n):
+    """gets min operations"""
 
     if (n < 2):
         return 0
