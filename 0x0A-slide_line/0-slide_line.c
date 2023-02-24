@@ -1,69 +1,93 @@
+#include <stdlib.h>
 #include "slide_line.h"
 
 /**
- * slide_line - slides and merges an array of ints to the left or right,
- * based on the mechanics of the 2048 game on a single horizontal line
- *
- * @line: pointer to the array of ints to slide and merge
- * @size: the size of the array of ints to slide and merge
- * @direction: int defined by macro to determine if sliding left or right
- * if direction is not left or right the function fails
- *
- * Return: 1 if successfully slid and merged, 0 otherwise
+ * swap_ints - switch 
+ * @p: pointer to an int
+ * @p2: pointer to an int
  */
-
-int slide_line(int *line, size_t size, int direction)
+void swap_ints(int *p, int *p2)
 {
-	int index = 0, placeholder = 0;
+	int temp = *p;
 
-	if (size < 1 || (direction != SLIDE_RIGHT && direction != SLIDE_LEFT))
-		return (0);
-	if (direction == SLIDE_RIGHT)
-	{
-		placeholder = (size - 1);
-		for (index = (size - 2); index >= 0; index--)
-		{
-			if (line[index] == line[placeholder] && line[index])
-				slide(line, index, placeholder--);
-			else if (line[index] != line[placeholder] && line[index])
-			{
-				if (line[placeholder] != 0)
-					placeholder--;
-				if (line[placeholder] == 0)
-					slide(line, index, placeholder);
-			}
-		}
-	}
-	else if (direction == SLIDE_LEFT)
-	{
-		for (index = 1; index < (int)size; index++)
-		{
-			if (line[index] == line[placeholder] && line[index])
-				slide(line, index, placeholder++);
-			else if (line[index] != line[placeholder] && line[index])
-			{
-				if (line[placeholder] != 0)
-					placeholder++;
-				if (line[placeholder] == 0)
-					slide(line, index, placeholder);
-			}
-		}
-	}
-	return (1);
+	*p = *p2;
+	*p2 = temp;
 }
 
 /**
- * slide - adds the value of index to the placeholder and
- * resets the value at index to 0
- *
- * @line: pointer to the array of ints to slide and merge
- * @index: index to get value that needs to be shifted
- * @placeholder: index to merge index's value into
- *
+ * shift_left - shifts nonzero numbers in a matrix to the left
+ * @line: array of integers.
+ * @size: size of the array
  */
-
-void slide(int *line, int index, int placeholder)
+void shift_left(int *line, size_t size)
 {
-	line[placeholder] += line[index];
-	line[index] = 0;
+	size_t i, pos = 0;
+
+	for (i = 0; i < size && pos < size; i++)
+	{
+		while (line[pos] == 0 && pos < size && pos + 1 < size)
+			pos++;
+		if (!line[i])
+			swap_ints(&line[pos], &line[i]);
+		pos++;
+	}
+}
+
+/**
+ * shift_right - shift nonzero numbers in an array to the right
+ * @line: array of integers.
+ * @size: size of the array
+ */
+void shift_right(int *line, size_t size)
+{
+	size_t i;
+	size_t pos = size - 1;
+
+	for (i = size - 1; (int) i >= 0 && (int) pos >= 0; i--)
+	{
+		while (line[pos] == 0 && (int) pos > 0)
+			pos--;
+		if (!line[i])
+			swap_ints(&line[pos], &line[i]);
+		pos--;
+	}
+}
+
+/**
+ * slide_line - merge like nums in array & shift non-0 nums in given direction
+ * @line: given array of integers
+ * @size: size of the array
+ * @direction: either left or right
+ * Return: 1 for success, else 0.
+ */
+int slide_line(int *line, size_t size, int direction)
+{
+	size_t i = 0;
+
+	if (direction == SLIDE_LEFT) {
+		shift_left(line, size);
+		for (i = 0; i < size; i++)
+		{
+			if (line[i] == line[i + 1])
+			{
+				line[i] = line[i] + line[i + 1];
+				line[i + 1] = 0;
+			}
+		}
+		shift_left(line, size);
+		return (1);
+	} else if (direction == SLIDE_RIGHT) {
+		shift_right(line, size);
+		for (i = size - 1; (int) i >= 0; i--)
+		{
+			if (line[i] == line[i - 1])
+			{
+				line[i] = line[i] + line[i - 1];
+				line[i - 1] = 0;
+			}
+		}
+		shift_right(line, size);
+		return (1);
+	}
+	return (0);
 }
